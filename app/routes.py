@@ -10,7 +10,6 @@ from werkzeug.urls import url_parse
 @app.route('/index')
 @login_required
 def index():
-    user = {'username': 'Sriram'}
     posts = [
         {
             'author': {'username': 'John'},
@@ -21,7 +20,6 @@ def index():
             'body': 'The Avengers movie was so cool!'
         }
     ]
-    #return render_template('index.html', user=user)
     return render_template('index.html', title='Home Page', posts=posts)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -59,3 +57,13 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = [
+        {'author': user, 'body': 'Test post #1'},
+        {'author': user, 'body': 'Test post #2'}
+    ]
+    return render_template('user.html', user=user, posts=posts)
